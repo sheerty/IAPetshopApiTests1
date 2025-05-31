@@ -95,3 +95,56 @@ class TestPet:
             assert response_json['tags'] == response_json['tags'], 'Теги не совпало'
             assert response_json['category'] == response_json['category'], 'Категории не совпало'
 
+    @allure.title("Получение информации о питомце по ID")
+    def test_get_pet_by_id(self, create_pet):
+        with allure.step('Получение ID созданного питомца'):
+            pet_id = create_pet["id"]
+
+        with allure.step('Отправка запроса'):
+            response = requests.get(url=f'{base_url}/pet/{pet_id}')
+
+        with allure.step('Проверка статуса'):
+            assert response.status_code == 200, "Статус код не совпал"
+            assert response.json()["id"] == pet_id, "Айди совпал"
+
+    @allure.title("Обновление информации о питомце")
+    def test_update_pet(self,create_pet):
+
+        with allure.step('Получение ID созданного питомца'):
+            pet_id = create_pet["id"]
+
+        with allure.step('Подготовка данных'):
+            payload = {"id": pet_id, "name": "Buddy", "status": "available"}
+
+        with allure.step('Отправка запроса'):
+            response = requests.put(url=f'{base_url}/pet', json=payload)
+            response_json = response.json()
+
+        with allure.step('Проверка статуса кода'):
+            assert response.status_code == 200, "Код не совпал"
+
+        with allure.step('Проверка ответа'):
+            jsonschema.validate(response.json(), PET_SCHEMA)
+
+        with allure.step('Проверка тела ответа'):
+            assert response_json['id'] == payload['id'], 'Айди не совпало'
+            assert response_json['name'] == payload['name'], 'Название не совпало'
+            assert response_json['status'] == payload['status'], 'Cтатус не совпал'
+
+    @allure.title("Удаление питомца по ID")
+    def test_delete_pet(self,create_pet):
+        with allure.step('Получение ID созданного питомца'):
+            pet_id = create_pet["id"]
+
+        with allure.step('Удаление питомца'):
+            response_delete = requests.delete(url=f'{base_url}/pet/{pet_id}')
+
+        with allure.step('Проверка статус кода и текста'):
+            assert response_delete.status_code == 200, "Код не совпал"
+            assert response_delete.text == "Pet deleted"
+
+        with allure.step('Проверка что питомец удален'):
+            response_get = requests.get(url=f'{base_url}/pet/{pet_id}')
+            assert response_get.status_code == 404, "Код не совпал"
+
+
