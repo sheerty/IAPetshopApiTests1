@@ -59,3 +59,14 @@ class TestPet:
             assert respone_json['name'] == payload['name'] , 'Имя не совпало'
             assert respone_json['status'] == payload['status'] , 'Статус не совпало'
 
+    @allure.title("Попытка получить информацию о несуществующем питомце")
+    def test_update_nonexistent_pet(self):
+        with allure.step('Попытка получить информацию о несуществующем питомце'):
+            response = requests.get(url=f'{base_url}/pet/9999')
+
+        with allure.step('Проверка статус кода'):
+            assert response.status_code == 404, "Статус кода не совпал"
+        with allure.step('Проверка сообщения'):
+            assert response.text == "Pet not found", "Текст не совпал"
+
+
