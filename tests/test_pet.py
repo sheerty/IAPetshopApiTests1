@@ -1,6 +1,7 @@
 import allure
 import jsonschema
 import requests
+import pytest
 from .schemas.pet_schema import PET_SCHEMA
 
 base_url = 'http://5.181.109.28:9090/api/v3'
@@ -147,4 +148,26 @@ class TestPet:
             response_get = requests.get(url=f'{base_url}/pet/{pet_id}')
             assert response_get.status_code == 404, "Код не совпал"
 
+    @allure.title("Получение списка питомцев по статусу")
+    @pytest.mark.parametrize(
+        "status, expected_status_code",
+        [('available', 200),
+         ('pending', 200)
+         ]
+    )
+    def test_get_pet_by_status(self, status, expected_status_code):
+        with allure.step(f'Отправка запроса на получение списка питомцев по статусу {status}'):
+            response = requests.get(url=f'{base_url}/pet/findByStatus', params={'status':status})
 
+        with allure.step('Проверка статуса кода и формата данных'):
+            assert response.status_code == expected_status_code, "Статус код не совпал"
+            assert isinstance(response.json(), list)
+
+    @allure.title("Получение списка питомцев по не существующим  статусу ")
+    @pytest.mark.parametrize("status, expected_status_code",[('asd', 400), ('', 400)])
+    def test_get_pet_by_nonexistent_status(self, status, expected_status_code):
+        with allure.step(f'Отправка запроса на получение списка питомцев по cтатусу {status}'):
+            response = requests.get(url=f'{base_url}/pet/findByStatus', params={'status':status})
+
+        with allure.step('Проверка код ответа'):
+            assert response.status_code == expected_status_code, "Код не совпал"
