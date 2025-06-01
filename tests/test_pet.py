@@ -152,7 +152,8 @@ class TestPet:
     @pytest.mark.parametrize(
         "status, expected_status_code",
         [('available', 200),
-         ('pending', 200)
+         ('pending', 200),
+        ('sold', 200)
          ]
     )
     def test_get_pet_by_status(self, status, expected_status_code):
