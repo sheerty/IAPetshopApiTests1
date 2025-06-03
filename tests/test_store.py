@@ -44,7 +44,7 @@ class TestStore:
             assert response.status_code == 200, 'Код не совпал'
 
         with allure.step('Проверка содержимой инфы в ответе'):
-            assert response_json['id'] == create_oder['id'], 'Айди совпало'
+            assert response_json['id'] == create_order['id'], 'Айди совпало'
 
         with allure.step('Проверка ответа'):
             jsonschema.validate(response.json(), STORE_SCHEMA)
