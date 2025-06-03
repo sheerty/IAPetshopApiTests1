@@ -35,7 +35,7 @@ class TestStore:
     @allure.title("Получение информации о заказе по ID")
     def test_get_order_by_id(self, create_order):
         with allure.step('Получение ID заказа'):
-            order_id = create_oder['id']
+            order_id = create_order['id']
         with allure.step('Отправка запроса на получение заказа по ID'):
             response = requests.get(f'{base_url}/store/order/{order_id}')
             response_json = response.json()
